@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 
             slideMenuLayout.getMenuView<View>()?.findViewById<TextView>(R.id.tvDelete)?.setOnClickListener {
                 mData.removeAt(position)
+                notifyItemRemoved(position)
                 notifyItemChanged(position)
             }
 
