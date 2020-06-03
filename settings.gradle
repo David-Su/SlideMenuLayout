@@ -1,0 +1,3 @@
+include ':slidemenulayout'
+include ':app'
+rootProject.name = "SlideMenuLayout"
