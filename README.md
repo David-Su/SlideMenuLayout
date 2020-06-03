@@ -1,6 +1,6 @@
 # SlideMenuLayout #
-## 介绍
 一款可以横向滑动的抽屉菜单小控件，菜单是任意自定义的布局，适合在列表中使用。
+## 效果
 <img src="https://github.com/David-Su/SlideMenuLayout/blob/master/doc/base.gif" align=center width="40%" height="40%">  <img src="https://github.com/David-Su/SlideMenuLayout/blob/master/doc/extension.gif" align=center width="40%" height="40%">
   
 ## 用法
