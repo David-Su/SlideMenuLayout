@@ -1,3 +1,3 @@
 include ':slidemenulayout'
-include ':app'
+include ':sample'
 rootProject.name = "SlideMenuLayout"
