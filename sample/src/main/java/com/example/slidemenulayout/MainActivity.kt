@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
             containerBtns.visibility = View.GONE
             supportFragmentManager
                 .beginTransaction()
+                .addToBackStack(mWithRecyclerView.javaClass.simpleName)
                 .replace(R.id.container, mWithRecyclerView)
                 .commit()
         }
@@ -34,8 +35,14 @@ class MainActivity : AppCompatActivity() {
             containerBtns.visibility = View.GONE
             supportFragmentManager
                 .beginTransaction()
+                .addToBackStack(mWithScrollView.javaClass.simpleName)
                 .replace(R.id.container, mWithScrollView)
                 .commit()
         }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        containerBtns.visibility = View.VISIBLE
     }
 }

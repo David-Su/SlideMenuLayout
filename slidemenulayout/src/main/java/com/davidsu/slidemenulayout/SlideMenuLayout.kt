@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.Scroller
+import java.lang.Exception
 import kotlin.math.abs
 
 /**
@@ -37,6 +38,7 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if (!valid()) return super.dispatchTouchEvent(ev)
+        Log.d("dispatchTouchEvent", ev?.action.toString())
         when (ev?.action) {
             MotionEvent.ACTION_DOWN -> {
                 mLastX = ev.x
@@ -60,22 +62,24 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         if (!valid()) return super.onInterceptTouchEvent(ev)
         Log.d("onInterceptTouchEvent", ev?.action.toString())
+
         when (ev?.action) {
-//            MotionEvent.ACTION_DOWN -> {
-//                if (scrollX == mMenu!!.width && mLastX < width - mMenu!!.width) { //如果判断手指点下的那一刻菜单已经完全展开，那么菜单应该收回，并且子View也不需要处理这次触摸系列事件。
-//                    parent.requestDisallowInterceptTouchEvent(true)
-//                    smoothScrollTo(0)
-//                    return true
-//                }
-//            }
-            MotionEvent.ACTION_MOVE -> {
-                if (isHorizontalMove(null)) {//判断是一个横向的滑动
+            MotionEvent.ACTION_DOWN -> {
+                if (scrollX == mMenu!!.width && mLastX < width - mMenu!!.width) { //1.如果菜单已经完全展开并且没有点击菜单，那么菜单应该收回，并且子View也不需要处理这次触摸系列事件。
                     return true
                 }
             }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                if (scrollX < 0) return true
+            MotionEvent.ACTION_MOVE -> {
+                if (isHorizontalMove(null)) {//2.判断是一个横向的滑动
+                    return true
+                }
             }
+            MotionEvent.ACTION_UP -> {
+                if (scrollX == mMenu!!.width) { //来到这里，证明不符合1，2，而且有子View消费了DOWN事件，正准备要响应点击事件。如果此时菜单打开，则应该关闭。
+                    smoothScrollTo(0)
+                }
+            }
+            //为什么ACTION_UP拦截了之后，这个事件不会去到onTouchEvent？有大神能解释吗？
         }
         return super.onInterceptTouchEvent(ev)
     }
@@ -86,8 +90,8 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
         Log.d("onTouchEvent", event?.action.toString())
         when (event?.action) {
             MotionEvent.ACTION_MOVE -> {
-
-                if (scrollX >= 0) scrollInRange() else smoothScrollTo(0)
+                scrollInRange()
+//                if (scrollX >= 0) scrollInRange() else smoothScrollTo(0)
             }
 
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
@@ -104,12 +108,14 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
                                 smoothScrollTo(0)
                             }
                         }
-                    }else{
-                        when (event.action){
-                            MotionEvent.ACTION_UP-> {
-                                if (scrollX == mMenu!!.width ) smoothScrollTo(0)
+                    } else {
+                        when (event.action) {
+                            MotionEvent.ACTION_UP -> {
+                                if (scrollX == mMenu!!.width) {
+                                    smoothScrollTo(0)
+                                }
                             }
-                            MotionEvent.ACTION_CANCEL ->{
+                            MotionEvent.ACTION_CANCEL -> {
 
                             }
                         }
@@ -135,23 +141,20 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
     }
 
     private fun smoothScrollTo(destination: Int) {
-        Log.d("smoothScroll", "${mScroller.isFinished}]")
         if (!mScroller.isFinished) return
         mScroller.startScroll(scrollX, scrollY, destination - scrollX, scrollY)
         invalidate()
     }
 
     private fun scrollInRange() {
-        Log.d("scrollInRange", mMenu!!.javaClass.simpleName)
         val sx = scrollX - mXdistance.toInt()
-        scrollTo(if (abs(sx) > mMenu!!.width) mMenu!!.width else sx, 0)
+        scrollTo(if (sx > mMenu!!.width) mMenu!!.width else if (sx >= 0) sx else 0, 0)
     }
 
     /**
      * left == null,表示只判断是否横向滑动
      */
     private fun isHorizontalMove(left: Boolean?): Boolean {
-
         var result: Boolean? = null
         result = if (abs(mXdistance) <= abs(mYdistance)) {
             false
@@ -160,11 +163,9 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
             true -> mXdistance < 0
             false -> mXdistance > 0
         }
-
-        Log.d("isHorizontalMove", abs(mXdistance).toString())
-        Log.d("isHorizontalMove", abs(mYdistance).toString())
-        Log.d("isHorizontalMove", result.toString() + "\n")
-
+//        Log.d("isHorizontalMove", abs(mXdistance).toString())
+//        Log.d("isHorizontalMove", abs(mYdistance).toString())
+//        Log.d("isHorizontalMove", result.toString() + "\n")
         return result
     }
 

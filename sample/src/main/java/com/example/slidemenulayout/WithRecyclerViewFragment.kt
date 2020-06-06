@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.MaterialDialog
@@ -60,11 +61,17 @@ class WithRecyclerViewFragment : Fragment() {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val slideMenuLayout = holder.itemView as SlideMenuLayout
+            holder.itemView.vgContent.setOnClickListener {
+                Toast.makeText(
+                    context,
+                    mData[position].title,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
             holder.itemView.ivIcon.setImageResource(mData[position].icon)
             holder.itemView.tvTitle.text = mData[position].title
             holder.itemView.tvContent.text = mData[position].content
             slideMenuLayout.closeImmediate()
-
 
             slideMenuLayout.getMenuView<View>()?.findViewById<TextView>(R.id.tvDelete)
                 ?.setOnClickListener {
