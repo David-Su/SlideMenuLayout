@@ -14,7 +14,7 @@
   
 #### Step 2. Add the dependency
 	dependencies {
-	        implementation 'com.github.David-Su:SlideMenuLayout:1.0.0'
+	        implementation 'com.github.David-Su:SlideMenuLayout:1.0.1'
 	}
 ### XML中使用
 	<?xml version="1.0" encoding="utf-8"?>
