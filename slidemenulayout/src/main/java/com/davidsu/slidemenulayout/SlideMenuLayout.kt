@@ -22,9 +22,12 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
     private var mXdistance = 0f
     private var mYdistance = 0f
     private var mMenu: View? = null
-    private var mOpenable = true
     private val mScroller = Scroller(context)
     private var mIsMove = false //是否有划动
+
+
+    private var mOpenable = true
+    private var mClickMenuAutoClose = true
 
     init {
         val a = context.obtainStyledAttributes(attrs, R.styleable.SlideMenuLayout)
@@ -75,7 +78,7 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
                 }
             }
             MotionEvent.ACTION_UP -> {
-                if (scrollX == mMenu!!.width) { //来到这里，证明不符合1，2，而且有子View消费了DOWN事件，正准备要响应点击事件。如果此时菜单打开，则应该关闭。
+                if (scrollX == mMenu!!.width && mClickMenuAutoClose) { //来到这里，证明不符合1，2，而且有子View消费了DOWN事件，正准备要响应点击事件。如果此时菜单打开，则应该关闭。
                     smoothScrollTo(0)
                 }
             }
@@ -174,8 +177,19 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
     fun <T : View?> getMenuView(): T? = mMenu as T?
 
 
+    /**
+     * 立刻关闭菜单，没有滑动效果
+     */
     fun closeImmediate() {
         mMenu?.let { scrollX = 0 }
+    }
+
+
+    /**
+     * 设置点击菜单是否自动关闭
+     */
+    fun setClickMenuAutoClose(auto: Boolean) {
+        mClickMenuAutoClose = auto
     }
 
     fun setOpenable(openable: Boolean) {

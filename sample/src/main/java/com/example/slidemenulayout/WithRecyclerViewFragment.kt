@@ -61,6 +61,7 @@ class WithRecyclerViewFragment : Fragment() {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val slideMenuLayout = holder.itemView as SlideMenuLayout
+            slideMenuLayout.setClickMenuAutoClose(false)
             holder.itemView.vgContent.setOnClickListener {
                 Toast.makeText(
                     context,
