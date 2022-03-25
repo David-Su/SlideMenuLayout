@@ -53,9 +53,6 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
                 mYdistance = ev.y - mLastY
                 mLastX = ev.x
                 mLastY = ev.y
-                if (isHorizontalMove(null)) {//判断是一个横向的滑动
-                    parent.requestDisallowInterceptTouchEvent(true)
-                }
                 mIsMove = true
             }
         }
@@ -69,11 +66,14 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
         when (ev?.action) {
             MotionEvent.ACTION_DOWN -> {
                 if (scrollX == mMenu!!.width && mLastX < width - mMenu!!.width) { //1.如果菜单已经完全展开并且没有点击菜单，那么菜单应该收回，并且子View也不需要处理这次触摸系列事件。
+                    smoothScrollTo(0)
+                    parent.requestDisallowInterceptTouchEvent(true)
                     return true
                 }
             }
             MotionEvent.ACTION_MOVE -> {
                 if (isHorizontalMove(null)) {//2.判断是一个横向的滑动
+                    parent.requestDisallowInterceptTouchEvent(true)
                     return true
                 }
             }
@@ -89,8 +89,8 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
 
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        if (!valid()) return super.onTouchEvent(event)
         Log.d("onTouchEvent", event?.action.toString())
+        if (!valid()) return super.onTouchEvent(event)
         when (event?.action) {
             MotionEvent.ACTION_MOVE -> {
                 scrollInRange()
@@ -101,28 +101,16 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
                 if (scrollX < 0) {
                     smoothScrollTo(0)
                 } else if (scrollX > 0) {
-
-                    if (mIsMove) {
-                        when {
-                            scrollX > mMenu!!.width / 2 -> {
-                                smoothScrollTo(mMenu!!.width)
-                            }
-                            scrollX < mMenu!!.width / 2 -> {
-                                smoothScrollTo(0)
-                            }
+                    when {
+                        scrollX > mMenu!!.width / 2 -> {
+                            smoothScrollTo(mMenu!!.width)
                         }
-                    } else {
-                        when (event.action) {
-                            MotionEvent.ACTION_UP -> {
-                                if (scrollX == mMenu!!.width) {
-                                    smoothScrollTo(0)
-                                }
-                            }
-                            MotionEvent.ACTION_CANCEL -> {
-
-                            }
+                        scrollX < mMenu!!.width / 2 -> {
+                            smoothScrollTo(0)
                         }
                     }
+                } else {
+                    performClick()
                 }
             }
         }
@@ -182,6 +170,13 @@ class SlideMenuLayout(context: Context, attrs: AttributeSet?) : FrameLayout(cont
      */
     fun closeImmediate() {
         mMenu?.let { scrollX = 0 }
+    }
+
+    /**
+     * 立刻关闭菜单，没有滑动效果
+     */
+    fun close() {
+        smoothScrollTo(0)
     }
 
 

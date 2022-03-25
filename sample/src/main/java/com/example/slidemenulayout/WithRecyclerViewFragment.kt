@@ -61,8 +61,8 @@ class WithRecyclerViewFragment : Fragment() {
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val slideMenuLayout = holder.itemView as SlideMenuLayout
-//            slideMenuLayout.setClickMenuAutoClose(false)
-            holder.itemView.vgContent.setOnClickListener {
+            slideMenuLayout.setClickMenuAutoClose(false)
+            holder.itemView.setOnClickListener {
                 Toast.makeText(
                     context,
                     mData[position].title,
@@ -84,6 +84,7 @@ class WithRecyclerViewFragment : Fragment() {
 
             slideMenuLayout.getMenuView<View>()?.findViewById<TextView>(R.id.tvUpdate)
                 ?.setOnClickListener {
+                    slideMenuLayout.close()
                     MaterialDialog(context!!).show {
                         input { _, charSequence ->
                             mData[position].content = charSequence.toString()
